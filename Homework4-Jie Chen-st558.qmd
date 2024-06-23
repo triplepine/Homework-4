@@ -32,9 +32,9 @@ R uses lexical scoping, that when it looks up the value of a name, it searches t
 
 ## Task 2 - Writing R Functions
 
-1.  \*Write a basic function (getRMSE()) that takes in a vector of responses and a vector of predictions and outputs the RMSE.
+1.  Write a basic function (getRMSE()) that takes in a vector of responses and a vector of predictions and outputs the RMSE.
 
-```{r, eval=FALSE}
+```{r}
 getRMSE <- function(resp, pred){
   residual <- resp - pred
   residual_sq <- residual^2
@@ -42,12 +42,12 @@ getRMSE <- function(resp, pred){
   RMSE <-sqrt(m_residual_sq)
   return(RMSE)
 }
-getRMSE(resp,pred)
+
 ```
 
 If a value is missing for the vector of responses (i.e. an NA is present), allow for additional arguments to the mean() function that removes the NA values in the computation.
 
-```{r, eval=FALSE}
+```{r}
 # add Ellipsis (...) Argument
 getRMSE <- function(resp, pred,...){
   # check two vectors are numeric, if not print a message and exit
@@ -61,9 +61,9 @@ getRMSE <- function(resp, pred,...){
   RMSE <-sqrt(m_residual_sq)
   return(RMSE)
 }
-# specify na.rm = TRUE to remove NA values from the computation
-getRMSE(resp,pred,na.rm=TRUE)
 ```
+
+* specify na.rm = TRUE to remove NA values from the computation getRMSE(resp,pred,na.rm=TRUE) *
 
 2.  Create some responses and predictions.
 
@@ -191,7 +191,9 @@ getMETRICS(resp, pred, na.rm = TRUE)
 
 # compute both RMSE and MAE by explicitly
 getMETRICS(resp,pred,merics=c("RMSE","MAE"),na.rm=TRUE)
+```
 
+```{r,echo=TRUE,eval=FALSE}
 # test function by passing incorrect data
 df <-data.frame(resp,pred)
 getMETRICS(df,pred,na.rm=TRUE)
@@ -209,7 +211,7 @@ library(tidyverse)
 # Connect to the news API: newsapi.org
 # my API key
 source("api_key.R")
-
+print(api_key)
 # define topic interested
 topic <-"heat wave"
 
