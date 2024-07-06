@@ -34,7 +34,7 @@ R uses lexical scoping, that when it looks up the value of a name, it searches t
 
 1.  Write a basic function (getRMSE()) that takes in a vector of responses and a vector of predictions and outputs the RMSE.
 
-```{r}
+```{r, include=FALSE}
 getRMSE <- function(resp, pred){
   residual <- resp - pred
   residual_sq <- residual^2
@@ -47,13 +47,10 @@ getRMSE <- function(resp, pred){
 
 If a value is missing for the vector of responses (i.e. an NA is present), allow for additional arguments to the mean() function that removes the NA values in the computation.
 
-```{r}
+```{r, include=FALSE}
 # add Ellipsis (...) Argument
 getRMSE <- function(resp, pred,...){
-  # check two vectors are numeric, if not print a message and exit
-  if (!is.numeric(resp) || !is.numeric(pred)) {
-    stop("Must be numeric vectors.")
-  }
+  
   residual <- resp - pred
   residual_sq <- residual^2
   # passing additional argument to mean
@@ -63,11 +60,11 @@ getRMSE <- function(resp, pred,...){
 }
 ```
 
-* specify na.rm = TRUE to remove NA values from the computation getRMSE(resp,pred,na.rm=TRUE) *
+-   specify na.rm = TRUE to remove NA values from the computation getRMSE(resp,pred,na.rm=TRUE)
 
 2.  Create some responses and predictions.
 
-```{r}
+```{r, include=FALSE}
 set.seed(10)
 n <-100
 x <-runif(n)
@@ -78,7 +75,7 @@ pred <-predict(lm(resp ~x),data.frame(x))
 getRMSE(resp,pred,na.rm=TRUE)
 ```
 
-```{r}
+```{r, include=FALSE}
 # replace two response values with missing values (NA_real_)
 ind <-c(2,5)
 resp[ind] <-NA_real_
@@ -92,13 +89,10 @@ getRMSE(resp,pred,na.rm=TRUE)
 
 3.  Another common metric for evaluating predictions is mean absolute deviation
 
-```{r}
+```{r,include=FALSE}
 # write a function getMAE()
 getMAE <- function(resp,pred,...) {
-  # check two vectors are numeric, if not print a message and exit
-  if (!is.numeric(resp) || !is.numeric(pred)){
-    stop("Must be numeric vectors.")
-  }
+  
   residual <- resp - pred
   residual_abs <- abs(residual)
   # passing additional argument to mean
@@ -107,7 +101,7 @@ getMAE <- function(resp,pred,...) {
 }
 ```
 
-```{r}
+```{r, include=FALSE}
 # create some response and predictions
 set.seed(10)
 n <-100
@@ -120,7 +114,7 @@ getMAE(resp,pred)
 getMAE(resp,pred,na.rm=TRUE)
 ```
 
-```{r}
+```{r, include=FALSE}
 # replace two of the response values with missing values
 ind <-c(2,7)
 resp[ind]<-NA_real_
@@ -134,8 +128,17 @@ getMAE(resp,pred)
 
 5.  create a wrapper function to get either or both metrics returned
 
-```{r}
+```{r,include=FALSE}
 getMETRICS <- function(resp, pred, metrics=c("RMSE", "MAE"),...) {
+  # check two vectors are numeric, if not print a message and exit
+  if (!is.vector(resp) || !is.numeric(resp) || !is.atomic(resp)) {
+    stop("Must be numeric vectors.")
+  }
+  # check two vectors are numeric, if not print a message and exit
+  if (!is.vector(pred) || !is.numeric(pred) || !is.atomic(pred)) {
+    stop("Must be numeric vectors.")
+  }
+  
   results <- list()
   if ("RMSE" %in% metrics) {
     rmse_value <- getRMSE(resp, pred, ...)
@@ -154,7 +157,7 @@ getMETRICS <- function(resp, pred, metrics=c("RMSE", "MAE"),...) {
 
 6.  create response values and predictions and test function
 
-```{r}
+```{r,include=FALSE}
 # create response values and predictions
 set.seed(10)
 n <-100
@@ -193,11 +196,15 @@ getMETRICS(resp, pred, na.rm = TRUE)
 getMETRICS(resp,pred,merics=c("RMSE","MAE"),na.rm=TRUE)
 ```
 
-```{r,echo=TRUE,eval=FALSE}
+```{r, eval=FALSE}
 # test function by passing incorrect data
 df <-data.frame(resp,pred)
-getMETRICS(df,pred,na.rm=TRUE)
+
+  getMETRICS(df,pred,na.rm=TRUE)
+
 ```
+
+#### Error in getMETRICS(df, pred, na.rm = TRUE) : Must be numeric vectors.
 
 ## Task 3 - Querying an API and a Tidy-Style Function
 
@@ -211,13 +218,12 @@ library(tidyverse)
 # Connect to the news API: newsapi.org
 # my API key
 source("api_key.R")
-print(api_key)
+
 # define topic interested
 topic <-"heat wave"
 
 # build the URL for the API request
 url <- paste0("https://newsapi.org/v2/everything?q=", URLencode(topic), "&apiKey=", api_key)
-# url <-"https://newsapi.org/v2/everything?q=heat%20wave&apiKey=03b9060366374f6d9459d2396315a0e8"
 
 # Make the GET request
 response <- GET(url)
@@ -232,18 +238,12 @@ parsed <-fromJSON(rawToChar(response$content))
 
 article_info <-as_tibble(parsed$articles)
 
-# Ensure the first column is a list column containing relevant details
-article_info <- article_info |>
-  rowwise() |>
-  mutate(source = list(list(source$id,source$name)))
-  
-article_info
+print(article_info)
 ```
 
-3.  write a function hat allows user to query this API
+3.  write a function that allows user to query this API
 
 ```{r}
-# Define the function
 query_news_api <- function(subject, start_date, api_key) {
   # Build the URL for the API request
   url <- paste0(
@@ -254,25 +254,16 @@ query_news_api <- function(subject, start_date, api_key) {
     "&apiKey=", api_key
   )
   # Make the GET request
-  response <- GET(url)
-  str(response,max.level=1)
-
-  # parse the response
-  parsed <-fromJSON(rawToChar(response$content))
-
-  article_info <-as_tibble(parsed$articles)
-
-  # Ensure the first column is a list column containing relevant details
-  article_info <- article_info |>
-    rowwise() |>
-    mutate(source = list(list(source$id,source$name)))
-    
-  return(article_info)
+   GET(url)$content |>
+     rawToChar() |>
+     fromJSON() |>
+     pluck("articles")|>
+     as_tibble()
+   
 }
-
-search1 <-query_news_api("heat wave", "2024-06-15",api_key)
-search1
-
-search2 <-query_news_api("president", "2024-06-20", api_key)
-search2
+  
+data1 <- query_news_api("joe biden","2024-06-25",api_key)
+data1
+data2 <- query_news_api("heat wave","2024-06-15",api_key)  
+data2
 ```
