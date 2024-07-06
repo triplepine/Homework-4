@@ -34,7 +34,7 @@ R uses lexical scoping, that when it looks up the value of a name, it searches t
 
 1.  Write a basic function (getRMSE()) that takes in a vector of responses and a vector of predictions and outputs the RMSE.
 
-```{r, include=FALSE}
+```{r}
 getRMSE <- function(resp, pred){
   residual <- resp - pred
   residual_sq <- residual^2
@@ -47,7 +47,7 @@ getRMSE <- function(resp, pred){
 
 If a value is missing for the vector of responses (i.e. an NA is present), allow for additional arguments to the mean() function that removes the NA values in the computation.
 
-```{r, include=FALSE}
+```{r}
 # add Ellipsis (...) Argument
 getRMSE <- function(resp, pred,...){
   
@@ -64,7 +64,7 @@ getRMSE <- function(resp, pred,...){
 
 2.  Create some responses and predictions.
 
-```{r, include=FALSE}
+```{r}
 set.seed(10)
 n <-100
 x <-runif(n)
@@ -75,7 +75,7 @@ pred <-predict(lm(resp ~x),data.frame(x))
 getRMSE(resp,pred,na.rm=TRUE)
 ```
 
-```{r, include=FALSE}
+```{r}
 # replace two response values with missing values (NA_real_)
 ind <-c(2,5)
 resp[ind] <-NA_real_
@@ -89,7 +89,7 @@ getRMSE(resp,pred,na.rm=TRUE)
 
 3.  Another common metric for evaluating predictions is mean absolute deviation
 
-```{r,include=FALSE}
+```{r}
 # write a function getMAE()
 getMAE <- function(resp,pred,...) {
   
@@ -101,7 +101,7 @@ getMAE <- function(resp,pred,...) {
 }
 ```
 
-```{r, include=FALSE}
+```{r}
 # create some response and predictions
 set.seed(10)
 n <-100
@@ -114,7 +114,7 @@ getMAE(resp,pred)
 getMAE(resp,pred,na.rm=TRUE)
 ```
 
-```{r, include=FALSE}
+```{r}
 # replace two of the response values with missing values
 ind <-c(2,7)
 resp[ind]<-NA_real_
@@ -128,7 +128,7 @@ getMAE(resp,pred)
 
 5.  create a wrapper function to get either or both metrics returned
 
-```{r,include=FALSE}
+```{r}
 getMETRICS <- function(resp, pred, metrics=c("RMSE", "MAE"),...) {
   # check two vectors are numeric, if not print a message and exit
   if (!is.vector(resp) || !is.numeric(resp) || !is.atomic(resp)) {
@@ -157,7 +157,7 @@ getMETRICS <- function(resp, pred, metrics=c("RMSE", "MAE"),...) {
 
 6.  create response values and predictions and test function
 
-```{r,include=FALSE}
+```{r}
 # create response values and predictions
 set.seed(10)
 n <-100
